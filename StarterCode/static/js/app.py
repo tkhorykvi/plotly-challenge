@@ -22,11 +22,14 @@ Base.prepare(db.engine, reflect=True)
 Samples_Metadata = Base.classes.sample_metadata
 Samples = Base.classes.samples
 
+@app.route("/")
+def index():
+    return render_template("index.html")
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.5.0/d3.js"></script>
-  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-  <script src="./static/js/app.js"></script>
-  <script src="./static/js/bonus.js"></script>
-  <script src="./static/js/samples.json"></script>
-</body>
-</html>
+
+@app.route("/names")
+def names():
+    stmt = db.session.query(Samples).statement
+    df = pd.read_sql_query(stmt, db.session.bind)
+    return jsonify(list(df.columns)[2:])
+    
